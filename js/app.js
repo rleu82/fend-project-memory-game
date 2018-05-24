@@ -29,6 +29,31 @@ const gameCards = [
  *   - add each card's HTML to the page
  */
 
+/*
+* Create memory game board
+*    - shuffle the cards using provided function
+*    - loop through the new array and generate html that will be stored in fragment (lesson 23.2) for performance
+*    - add the stored fragment into <ul> with class of deck
+*    - used map method to handle the new shuffled array 
+*/
+const shuffledCards = shuffle(gameCards);
+const gameDeck = document.querySelector(".deck");
+
+function createGameBoard() {
+   let cardHtml = "";
+   for (let cardItem of shuffledCards) {
+      /*let cardPieceA = `<li class="card"><i class="fa `;
+      let cardPieceB = `"></i></li>`;
+      let theCard = cardPieceA + cardItem + cardPieceB;*/
+      // condensed to below using template literal
+      let theCard = `<li class="card"><i class="fa ${cardItem}"></i></li>`;
+      cardHtml += theCard;
+   }
+   gameDeck.insertAdjacentHTML("afterbegin", cardHtml);
+}
+
+createGameBoard();
+
 // Shuffle function from http://stackoverflow.com/a/2450976
 function shuffle(array) {
    var currentIndex = array.length,
