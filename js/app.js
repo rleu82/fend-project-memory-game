@@ -4,71 +4,66 @@
  *   - symbols are from fontawesome using fa- naming scheme
  */
 const gameCards = [
-   "fa-diamond",
-   "fa-diamond",
-   "fa-paper-plane-o",
-   "fa-paper-plane-o",
-   "fa-anchor",
-   "fa-anchor",
-   "fa-bolt",
-   "fa-bolt",
-   "fa-cube",
-   "fa-cube",
-   "fa-bomb",
-   "fa-bomb",
-   "fa-leaf",
-   "fa-leaf",
-   "fa-bicycle",
-   "fa-bicycle"
+    "fa-diamond",
+    "fa-diamond",
+    "fa-paper-plane-o",
+    "fa-paper-plane-o",
+    "fa-anchor",
+    "fa-anchor",
+    "fa-bolt",
+    "fa-bolt",
+    "fa-cube",
+    "fa-cube",
+    "fa-bomb",
+    "fa-bomb",
+    "fa-leaf",
+    "fa-leaf",
+    "fa-bicycle",
+    "fa-bicycle"
 ];
-
-/*
- * Display the cards on the page
- *   - shuffle the list of cards using the provided "shuffle" method below
- *   - loop through each card and create its HTML
- *   - add each card's HTML to the page
- */
 
 /*
 * Create memory game board
 *    - shuffle the cards using provided function
-*    - loop through the new array and generate html that will be stored in fragment (lesson 23.2) for performance
-*    - add the stored fragment into <ul> with class of deck
-*    - used map method to handle the new shuffled array 
+*    - loop through the new array and generate html
+*    - add the stored html into <ul> with class of deck
+*    - used forOf to handle the new shuffled array 
 */
 const shuffledCards = shuffle(gameCards);
 const gameDeck = document.querySelector(".deck");
 
 function createGameBoard() {
-   let cardHtml = "";
-   for (let cardItem of shuffledCards) {
-      /*let cardPieceA = `<li class="card"><i class="fa `;
-      let cardPieceB = `"></i></li>`;
-      let theCard = cardPieceA + cardItem + cardPieceB;*/
-      // condensed to below using template literal
-      let theCard = `<li class="card"><i class="fa ${cardItem}"></i></li>`;
-      cardHtml += theCard;
-   }
-   gameDeck.insertAdjacentHTML("afterbegin", cardHtml);
+    let cardHtml = "";
+
+    for (let cardItem of shuffledCards) {
+        /*let cardPieceA = `<li class="card"><i class="fa `;
+        let cardPieceB = `"></i></li>`;
+        let theCard = cardPieceA + cardItem + cardPieceB;*/
+        // condensed to below using template literal
+        let theCard = `<li class="card"><i class="fa ${cardItem}"></i></li>`;
+        cardHtml += theCard;
+    }
+
+    gameDeck.insertAdjacentHTML("afterbegin", cardHtml);
 }
 
 createGameBoard();
 
 // Shuffle function from http://stackoverflow.com/a/2450976
 function shuffle(array) {
-   var currentIndex = array.length,
-      temporaryValue,
-      randomIndex;
+    var currentIndex = array.length,
+        temporaryValue,
+        randomIndex;
 
-   while (currentIndex !== 0) {
-      randomIndex = Math.floor(Math.random() * currentIndex);
-      currentIndex -= 1;
-      temporaryValue = array[currentIndex];
-      array[currentIndex] = array[randomIndex];
-      array[randomIndex] = temporaryValue;
-   }
+    while (currentIndex !== 0) {
+        randomIndex = Math.floor(Math.random() * currentIndex);
+        currentIndex -= 1;
+        temporaryValue = array[currentIndex];
+        array[currentIndex] = array[randomIndex];
+        array[randomIndex] = temporaryValue;
+    }
 
-   return array;
+    return array;
 }
 
 /*
@@ -81,3 +76,38 @@ function shuffle(array) {
  *    + increment the move counter and display it on the page (put this functionality in another function that you call from this one)
  *    + if all cards have matched, display a message with the final score (put this functionality in another function that you call from this one)
  */
+var cardStored = [];
+
+// Open, Close, Push card functions
+function openCard(card) {
+    card.classList.add("open", "show");
+}
+
+function closeCard(card) {
+    card.classList.remove("open", "show");
+}
+
+function pushCard(card) {
+    cardStored.push(card);
+}
+
+function matchedCard(card) {
+    card.classList.add("match");
+}
+
+gameDeck.addEventListener("click", function(thisCard) {
+    let card = thisCard.target;
+
+    if (theCardSelected.nodeName == "LI") {
+        openCard(card);
+        pushCard(card);
+
+        if (cardStored.length == 2) {
+            let firstCard = cardStored[0].dataset.card;
+            let secondCard = cardStored[1].dataset.card;
+
+            if (firstCard == secondCard) {
+            }
+        }
+    }
+});
