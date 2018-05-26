@@ -85,7 +85,7 @@ function openCard(card) {
     card.classList.add("open", "show", "stopMouse");
 }
 
-//Hides cards symbol and enables mouse events for all cards
+//Hides cards symbol and enables mouse events for cards that are flipped
 function closeCard() {
     var arrCards = Array.from(document.getElementsByClassName("open"));
     enableCards();
@@ -95,7 +95,7 @@ function closeCard() {
     });
 }
 
-// Add Match class and disable mouse events
+// Add Match class and disable mouse events for matched cards
 function matchedCard() {
     var arrCards = Array.from(document.getElementsByClassName("open"));
     arrCards.forEach(function(card) {
@@ -122,6 +122,19 @@ function enableCards() {
     });
 }
 
+/*
+* Event listener for a card(<li>)
+*   - event delegation on parent gameDeck
+*   - if target is card(<li>), the card is flipped and pushed to array cardStored[]
+*       - openCard() adds open, show, stopMouse classes to card
+*       - stopMouse prevents clicking same card twice
+*
+* If the cardStored array has TWO cards stored, disable all cards to prevent more cards from flipping
+*   - check array to compare dataset
+*   - matched cards have match and stopMouse classes added to prevent clicks
+*   - all other cards are enabled
+*       - if no matches found, close the cards and clear the array again.
+*/
 gameDeck.addEventListener("click", function(thisCard) {
     var card = thisCard.target;
     var gameCards = document.querySelectorAll(".card");
