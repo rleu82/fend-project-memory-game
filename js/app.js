@@ -78,17 +78,28 @@ function shuffle(array) {
  */
 
 var cardStored = [];
-var getOpenCards = document.querySelectorAll(".open");
+var getAllCards = Array.from(document.getElementsByClassName("card"));
 
-// Displays card's symbol
+// Displays card's symbol and disables mouse event on card (prevents double click)
 function openCard(card) {
-    card.classList.add("open", "show");
+    card.classList.add("open", "show", "stopMouse");
 }
 
-//Hides cards symbol - find all cards with .open class and remove .open and .show
-function closeCard(card) {
-    getOpenCards.forEach(function(card) {
-        card.classList.remove("open", "show");
+//Hides cards symbol and enables mouse events for all cards
+function closeCard() {
+    var arrCards = Array.from(document.getElementsByClassName("open"));
+    enableCards();
+    arrCards.forEach(function(card) {
+        card.classList.remove("open", "show", "stopMouse");
+        console.log(card);
+    });
+}
+
+// Add Match class and disable mouse events
+function matchedCard() {
+    var arrCards = Array.from(document.getElementsByClassName("open"));
+    arrCards.forEach(function(card) {
+        card.classList.add("match", "stopMouse");
     });
 }
 
@@ -97,10 +108,17 @@ function pushCard(card) {
     cardStored.push(card);
 }
 
-// Add Match class - find all .open cards if cards match and add .match class
-function matchedCard() {
-    getOpenCards.forEach(function(card) {
-        card.classList.add("match");
+// Disables mouse events on all cards - Function called when two cards are flipped
+function disableCards() {
+    getAllCards.forEach(function(card) {
+        card.classList.add("stopMouse");
+    });
+}
+
+// Disables mouse events on all cards - Function called if cards match or do not match to reset mouse events
+function enableCards() {
+    getAllCards.forEach(function(card) {
+        card.classList.remove("stopMouse");
     });
 }
 
@@ -112,14 +130,19 @@ gameDeck.addEventListener("click", function(thisCard) {
         openCard(card);
         pushCard(card);
         console.log(cardStored);
-    }
-    if (cardStored.length == 2) {
-        if (cardStored[0].dataset == cardStored[1].dataset) {
-            matchedCard(card);
-        } else {
-            setTimeout(100);
-            closeCard(card);
-            closeCard(cardStored[0]);
+
+        if (cardStored.length == 2) {
+            disableCards();
+            if (cardStored[0].dataset.symbol == cardStored[1].dataset.symbol) {
+                matchedCard();
+                cardStored = [];
+                enableCards();
+            } else {
+                setTimeout(function() {
+                    closeCard();
+                }, 1500);
+                cardStored = [];
+            }
         }
     }
 });
