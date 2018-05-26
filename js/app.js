@@ -40,7 +40,7 @@ function createGameBoard() {
         let cardPieceB = `"></i></li>`;
         let theCard = cardPieceA + cardItem + cardPieceB;*/
         // condensed to below using template literal
-        let theCard = `<li class="card"><i class="fa ${cardItem}"></i></li>`;
+        let theCard = `<li class="card" data-symbol="${cardItem}"><i class="fa ${cardItem}"></i></li>`;
         cardHtml += theCard;
     }
 
@@ -76,38 +76,50 @@ function shuffle(array) {
  *    + increment the move counter and display it on the page (put this functionality in another function that you call from this one)
  *    + if all cards have matched, display a message with the final score (put this functionality in another function that you call from this one)
  */
-var cardStored = [];
 
-// Open, Close, Push card functions
+var cardStored = [];
+var getOpenCards = document.querySelectorAll(".open");
+
+// Displays card's symbol
 function openCard(card) {
     card.classList.add("open", "show");
 }
 
+//Hides cards symbol - find all cards with .open class and remove .open and .show
 function closeCard(card) {
-    card.classList.remove("open", "show");
+    getOpenCards.forEach(function(card) {
+        card.classList.remove("open", "show");
+    });
 }
 
+// Add card to cardStored array(list) until compared
 function pushCard(card) {
     cardStored.push(card);
 }
 
-function matchedCard(card) {
-    card.classList.add("match");
+// Add Match class - find all .open cards if cards match and add .match class
+function matchedCard() {
+    getOpenCards.forEach(function(card) {
+        card.classList.add("match");
+    });
 }
 
 gameDeck.addEventListener("click", function(thisCard) {
-    let card = thisCard.target;
+    var card = thisCard.target;
+    var gameCards = document.querySelectorAll(".card");
 
-    if (theCardSelected.nodeName == "LI") {
+    if (thisCard.target.nodeName == "LI") {
         openCard(card);
         pushCard(card);
-
-        if (cardStored.length == 2) {
-            let firstCard = cardStored[0].dataset.card;
-            let secondCard = cardStored[1].dataset.card;
-
-            if (firstCard == secondCard) {
-            }
+        console.log(cardStored);
+    }
+    if (cardStored.length == 2) {
+        if (cardStored[0].dataset == cardStored[1].dataset) {
+            matchedCard(card);
+        } else {
+            setTimeout(100);
+            closeCard(card);
+            closeCard(cardStored[0]);
         }
     }
 });
