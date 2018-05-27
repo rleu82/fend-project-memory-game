@@ -45,6 +45,7 @@ function createGameBoard() {
     }
 
     gameDeck.insertAdjacentHTML("afterbegin", cardHtml);
+    timer();
 }
 
 createGameBoard();
@@ -85,7 +86,7 @@ function openCard(card) {
     card.classList.add("open", "show", "stopMouse");
 }
 
-//Hides cards symbol and enables mouse events for cards that are flipped
+// Hides cards symbol and enables mouse events for cards that are flipped
 function closeCard() {
     var arrCards = Array.from(document.getElementsByClassName("open"));
     enableCards();
@@ -122,6 +123,44 @@ function enableCards() {
     });
 }
 
+// Move Count
+var yourMoves = 0;
+function displayMoves() {
+    let grabMoves = document.getElementById("moves");
+    yourMoves++;
+    console.log(yourMoves);
+    grabMoves.innerHTML = yourMoves;
+}
+
+// Manage timer DOM
+var tSeconds = 0;
+var tMinutes = 0;
+function manageTimer() {
+    let grabSeconds = document.getElementById("seconds");
+    let grabMinutes = document.getElementById("minutes");
+    tSeconds++;
+    if (tSeconds == 60) {
+        tMinutes++;
+        tSeconds = 0;
+    }
+    if (tSeconds < 10) {
+        grabSeconds.innerHTML = "0" + tSeconds;
+    } else {
+        grabSeconds.innerHTML = tSeconds;
+    }
+    grabMinutes.innerHTML = tMinutes;
+}
+
+// Start Timer
+function timer() {
+    startTimer = setInterval(manageTimer, 1000);
+}
+
+// Stop Timer
+function stopTimer() {
+    clearInterval(startTimer);
+}
+
 /*
 * Event listener for a card(<li>)
 *   - event delegation on parent gameDeck
@@ -146,10 +185,12 @@ gameDeck.addEventListener("click", function(thisCard) {
 
         if (cardStored.length == 2) {
             disableCards();
+            displayMoves();
             if (cardStored[0].dataset.symbol == cardStored[1].dataset.symbol) {
                 matchedCard();
                 cardStored = [];
                 enableCards();
+                stopTimer();
             } else {
                 setTimeout(function() {
                     closeCard();
