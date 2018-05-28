@@ -123,13 +123,21 @@ function enableCards() {
     });
 }
 
-// Move Count
+// Move Count - Change stars to two when moves = 12, one star at moves = 18. default is 3 stars
 var yourMoves = 0;
 function displayMoves() {
     let grabMoves = document.getElementById("moves");
+    let grabStars = document.getElementById("stars");
+    let twoStars = `<li><i class="fa fa-star"></i></li><li><i class="fa fa-star"></i></li><li><i class="fa fa-star-o"></i></li>`;
+    let oneStar = `<li><i class="fa fa-star"></i></li><li><i class="fa fa-star-o"></i></li><li><i class="fa fa-star-o"></i></li>`;
     yourMoves++;
     console.log(yourMoves);
     grabMoves.innerHTML = yourMoves;
+    if (yourMoves == 12) {
+        grabStars.innerHTML = twoStars;
+    } else if (yourMoves == 18) {
+        grabStars.innerHTML = oneStar;
+    }
 }
 
 // Manage timer DOM
@@ -161,6 +169,14 @@ function stopTimer() {
     clearInterval(startTimer);
 }
 
+// Check if all are matched
+var allMatched = 0;
+function matchedAll() {
+    if (allMatched == 8) {
+        stopTimer();
+    }
+}
+
 /*
 * Event listener for a card(<li>)
 *   - event delegation on parent gameDeck
@@ -174,6 +190,7 @@ function stopTimer() {
 *   - all other cards are enabled
 *       - if no matches found, close the cards and clear the array again.
 */
+
 gameDeck.addEventListener("click", function(thisCard) {
     var card = thisCard.target;
     var gameCards = document.querySelectorAll(".card");
@@ -189,12 +206,14 @@ gameDeck.addEventListener("click", function(thisCard) {
             if (cardStored[0].dataset.symbol == cardStored[1].dataset.symbol) {
                 matchedCard();
                 cardStored = [];
+                allMatched++;
                 enableCards();
-                stopTimer();
+                matchedAll();
+                console.log(allMatched);
             } else {
                 setTimeout(function() {
                     closeCard();
-                }, 1500);
+                }, 1250);
                 cardStored = [];
             }
         }
