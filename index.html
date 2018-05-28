@@ -1,5 +1,6 @@
 <!doctype html>
 <html lang="en">
+
 <head>
     <meta charset="utf-8">
     <title>Matching Game</title>
@@ -8,6 +9,7 @@
     <link rel="stylesheet prefetch" href="https://fonts.googleapis.com/css?family=Coda">
     <link rel="stylesheet" href="css/app.css">
 </head>
+
 <body>
 
     <div class="container">
@@ -16,13 +18,19 @@
         </header>
 
         <section class="score-panel">
-        	<ul class="stars">
-        		<li><i class="fa fa-star"></i></li>
-        		<li><i class="fa fa-star"></i></li>
-        		<li><i class="fa fa-star"></i></li>
-        	</ul>
+            <ul id="stars" class="stars">
+                <li>
+                    <i class="fa fa-star"></i>
+                </li>
+                <li>
+                    <i class="fa fa-star"></i>
+                </li>
+                <li>
+                    <i class="fa fa-star"></i>
+                </li>
+            </ul>
 
-        	<span id="moves" class="moves">0</span> Moves
+            <span id="moves" class="moves">0</span> Moves
 
             <div class="timer">
                 <span id="minutes">0</span> :
@@ -30,14 +38,24 @@
             </div>
 
             <div class="restart">
-                    <i class="fa fa-repeat"> Restart</i>
-                </div>
+                <i class="fa fa-repeat"></i> Restart
+            </div>
         </section>
 
         <ul class="deck">
         </ul>
     </div>
 
+    <div id="eModal" class="game-popup">
+        <div class="modal-info">
+            <h3>Congratulations, You Won!</h3>
+            <p id="end-message">Lorem ipsum dolor sit amet consectetur adipisicing elit. Ipsam perspiciatis assumenda ducimus accusamus maiores, in explicabo aliquam possimus doloribus corrupti, est quidem, voluptatibus similique ipsa reiciendis error ut! Rerum, expedita?</div></p>
+            <div class="play-again">
+                <span>Play Again</span>
+            </div>
+        </div>
+    </div>
     <script src="js/app.js"></script>
 </body>
+
 </html>

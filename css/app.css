@@ -108,7 +108,6 @@ h1 {
 }
 
 .score-panel .restart {
-    display: inline-block;
     float: right;
     cursor: pointer;
 }
@@ -120,4 +119,35 @@ h1 {
 
 .score-panel .moves {
     margin: 0 0 0 10px;
+}
+
+/*
+* Styles for Popup Modals
+*/
+.game-popup {
+    display: none;
+    background: linear-gradient(160deg, #02ccba 0%, #aa7ecd 100%);
+    position: fixed;
+    width: 340px;
+    height: 170px;
+    margin-left: -170px;
+    margin-top: -170px;
+    left: 50%;
+    top: 50%;
+    overflow: auto;
+    text-align: center;
+    border: 3px solid white;
+    border-radius: 10px;
+}
+
+.game-popup .play-again {
+    display: block;
+    width: 150px;
+    padding: 5px 5px;
+    background: #02b3e4;
+    border: 3px solid white;
+    border-radius: 10px;
+    text-align: center;
+    cursor: pointer;
+    margin: 10px auto;
 }
