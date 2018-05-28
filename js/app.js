@@ -31,6 +31,7 @@ const gameCards = [
 */
 const shuffledCards = shuffle(gameCards);
 const gameDeck = document.querySelector(".deck");
+const gameRestart = document.querySelector(".restart");
 
 function createGameBoard() {
     let cardHtml = "";
@@ -78,8 +79,8 @@ function shuffle(array) {
  *    + if all cards have matched, display a message with the final score (put this functionality in another function that you call from this one)
  */
 
-var cardStored = [];
-var getAllCards = Array.from(document.getElementsByClassName("card"));
+let cardStored = [];
+const getAllCards = Array.from(document.getElementsByClassName("card"));
 
 // Displays card's symbol and disables mouse event on card (prevents double click)
 function openCard(card) {
@@ -88,7 +89,7 @@ function openCard(card) {
 
 // Hides cards symbol and enables mouse events for cards that are flipped
 function closeCard() {
-    var arrCards = Array.from(document.getElementsByClassName("open"));
+    let arrCards = Array.from(document.getElementsByClassName("open"));
     enableCards();
     arrCards.forEach(function(card) {
         card.classList.remove("open", "show", "stopMouse");
@@ -98,7 +99,7 @@ function closeCard() {
 
 // Add Match class and disable mouse events for matched cards
 function matchedCard() {
-    var arrCards = Array.from(document.getElementsByClassName("open"));
+    let arrCards = Array.from(document.getElementsByClassName("open"));
     arrCards.forEach(function(card) {
         card.classList.add("match", "stopMouse");
     });
@@ -124,7 +125,9 @@ function enableCards() {
 }
 
 // Move Count - Change stars to two when moves = 12, one star at moves = 18. default is 3 stars
-var yourMoves = 0;
+let yourMoves = 0;
+let starCount = `<li><i class="fa fa-star"></i></li><li><i class="fa fa-star"></i></li><li><i class="fa fa-star"></i></li>`;
+let modalMessage = " 3 Stars! You are a Pro!";
 function displayMoves() {
     let grabMoves = document.getElementById("moves");
     let grabStars = document.getElementById("stars");
@@ -135,17 +138,21 @@ function displayMoves() {
     grabMoves.innerHTML = yourMoves;
     if (yourMoves == 12) {
         grabStars.innerHTML = twoStars;
+        starCount = twoStars;
+        modalMessage = " 2 Stars! Keep at it!";
     } else if (yourMoves == 18) {
         grabStars.innerHTML = oneStar;
+        starCount = oneStar;
+        modalMessage = " 1 Star! I know you can do better!";
     }
 }
 
 // Manage timer DOM
-var tSeconds = 0;
-var tMinutes = 0;
+const grabSeconds = document.getElementById("seconds");
+const grabMinutes = document.getElementById("minutes");
+let tSeconds = 0;
+let tMinutes = 0;
 function manageTimer() {
-    let grabSeconds = document.getElementById("seconds");
-    let grabMinutes = document.getElementById("minutes");
     tSeconds++;
     if (tSeconds == 60) {
         tMinutes++;
@@ -169,11 +176,26 @@ function stopTimer() {
     clearInterval(startTimer);
 }
 
+// Show modal
+const endModal = document.getElementById("eModal");
+const getModalMessage = document.getElementById("end-message");
+function showModal() {
+    endModal.style.display = "block";
+    getModalMessage.innerHTML = modalMessage;
+}
+
+// Hide modal
+function hideModal() {
+    endModal.style.display = "none";
+}
+
 // Check if all are matched
-var allMatched = 0;
+let allMatched = 0;
 function matchedAll() {
     if (allMatched == 8) {
         stopTimer();
+        showModal();
+        disableCards();
     }
 }
 
@@ -192,8 +214,8 @@ function matchedAll() {
 */
 
 gameDeck.addEventListener("click", function(thisCard) {
-    var card = thisCard.target;
-    var gameCards = document.querySelectorAll(".card");
+    let card = thisCard.target;
+    let gameCards = document.querySelectorAll(".card");
 
     if (thisCard.target.nodeName == "LI") {
         openCard(card);
@@ -208,12 +230,12 @@ gameDeck.addEventListener("click", function(thisCard) {
                 cardStored = [];
                 allMatched++;
                 enableCards();
-                matchedAll();
                 console.log(allMatched);
+                matchedAll();
             } else {
                 setTimeout(function() {
                     closeCard();
-                }, 1250);
+                }, 1150);
                 cardStored = [];
             }
         }
