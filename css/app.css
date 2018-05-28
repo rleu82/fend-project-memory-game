@@ -151,3 +151,31 @@ h1 {
     cursor: pointer;
     margin: 10px auto;
 }
+
+/*
+* Media queries
+*/
+@media screen and (max-width: 550px){
+    .deck {
+        width: 380px;
+        min-height: 390px;
+        padding: 15px;
+    }
+
+    .deck .card {
+        height: 71px;
+        width: 71px;
+    }
+}
+
+@media screen and (min-width: 501px) and (max-width: 768px) {
+    .deck {
+        width: 500px;
+        min-height: 510px;
+        padding: 24px;
+    }
+    .deck .card {
+        height: 94px;
+        width: 94px;
+    }
+}
