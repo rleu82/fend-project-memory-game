@@ -32,6 +32,7 @@ const gameCards = [
 const shuffledCards = shuffle(gameCards);
 const gameDeck = document.querySelector(".deck");
 const gameRestart = document.querySelector(".restart");
+let cardStored = [];
 
 function createGameBoard() {
     let cardHtml = "";
@@ -44,9 +45,8 @@ function createGameBoard() {
         let theCard = `<li class="card" data-symbol="${cardItem}"><i class="fa ${cardItem}"></i></li>`;
         cardHtml += theCard;
     }
-
-    gameDeck.insertAdjacentHTML("afterbegin", cardHtml);
-    timer();
+    gameDeck.innerHTML = cardHtml;
+    cardStored = [];
 }
 
 createGameBoard();
@@ -69,17 +69,8 @@ function shuffle(array) {
 }
 
 /*
- * set up the event listener for a card. If a card is clicked:
- *  - display the card's symbol (put this functionality in another function that you call from this one)
- *  - add the card to a *list* of "open" cards (put this functionality in another function that you call from this one)
- *  - if the list already has another card, check to see if the two cards match
- *    + if the cards do match, lock the cards in the open position (put this functionality in another function that you call from this one)
- *    + if the cards do not match, remove the cards from the list and hide the card's symbol (put this functionality in another function that you call from this one)
- *    + increment the move counter and display it on the page (put this functionality in another function that you call from this one)
- *    + if all cards have matched, display a message with the final score (put this functionality in another function that you call from this one)
- */
-
-let cardStored = [];
+ * Card Management Functions
+*/
 const getAllCards = Array.from(document.getElementsByClassName("card"));
 
 // Displays card's symbol and disables mouse event on card (prevents double click)
@@ -124,13 +115,17 @@ function enableCards() {
     });
 }
 
+/*
+* Score Tracking Functions - Moves and Timer DOM
+*/
 // Move Count - Change stars to two when moves = 12, one star at moves = 18. default is 3 stars
 let yourMoves = 0;
 let starCount = `<li><i class="fa fa-star"></i></li><li><i class="fa fa-star"></i></li><li><i class="fa fa-star"></i></li>`;
 let modalMessage = " 3 Stars! You are a Pro!";
+const grabMoves = document.getElementById("moves");
+const grabStars = document.getElementById("stars");
+
 function displayMoves() {
-    let grabMoves = document.getElementById("moves");
-    let grabStars = document.getElementById("stars");
     let twoStars = `<li><i class="fa fa-star"></i></li><li><i class="fa fa-star"></i></li><li><i class="fa fa-star-o"></i></li>`;
     let oneStar = `<li><i class="fa fa-star"></i></li><li><i class="fa fa-star-o"></i></li><li><i class="fa fa-star-o"></i></li>`;
     yourMoves++;
@@ -148,17 +143,24 @@ function displayMoves() {
 }
 
 // Manage timer DOM
-const grabSeconds = document.getElementById("seconds");
-const grabMinutes = document.getElementById("minutes");
 let tSeconds = 0;
 let tMinutes = 0;
+const grabSeconds = document.getElementById("seconds");
+const grabMinutes = document.getElementById("minutes");
+let stopGameTimer = false;
+
+function stopTimerCount() {
+    if ((stopGameTimer = true)) {
+        tSeconds = 0;
+        tMinutes = 0;
+    }
+}
 function manageTimer() {
     tSeconds++;
     if (tSeconds == 60) {
         tMinutes++;
         tSeconds = 0;
-    }
-    if (tSeconds < 10) {
+    } else if (tSeconds < 10) {
         grabSeconds.innerHTML = "0" + tSeconds;
     } else {
         grabSeconds.innerHTML = tSeconds;
@@ -167,6 +169,7 @@ function manageTimer() {
 }
 
 // Start Timer
+let startTimer;
 function timer() {
     startTimer = setInterval(manageTimer, 1000);
 }
@@ -176,7 +179,10 @@ function stopTimer() {
     clearInterval(startTimer);
 }
 
-// Show modal
+/* 
+* Start and End Game modals
+*/
+// Show end game modal
 const endModal = document.getElementById("eModal");
 const getModalMessage = document.getElementById("end-message");
 function showModal() {
@@ -189,7 +195,21 @@ function hideModal() {
     endModal.style.display = "none";
 }
 
-// Check if all are matched
+// Restart Game function
+function restartAllGame() {
+    yourMoves = 0;
+    starCount = `<li><i class="fa fa-star"></i></li><li><i class="fa fa-star"></i></li><li><i class="fa fa-star"></i></li>`;
+    stopGameTimer = true;
+    stopTimer();
+    stopTimerCount();
+    stopGameTimer = false;
+    grabStars.innerHTML = starCount;
+    grabMoves.innerHTML = "0";
+    grabSeconds.innerHTML = "0";
+    grabMinutes.innerHTML = "0";
+    createGameBoard();
+}
+// Check if all are matched to end game
 let allMatched = 0;
 function matchedAll() {
     if (allMatched == 8) {
@@ -213,6 +233,7 @@ function matchedAll() {
 *       - if no matches found, close the cards and clear the array again.
 */
 
+// Main Game Event Listener
 gameDeck.addEventListener("click", function(thisCard) {
     let card = thisCard.target;
     let gameCards = document.querySelectorAll(".card");
@@ -223,21 +244,34 @@ gameDeck.addEventListener("click", function(thisCard) {
         console.log(cardStored);
 
         if (cardStored.length == 2) {
-            disableCards();
-            displayMoves();
+            // when two cards added to array
+            disableCards(); // disable all cards for checking match
+            displayMoves(); // update move counter
             if (cardStored[0].dataset.symbol == cardStored[1].dataset.symbol) {
-                matchedCard();
-                cardStored = [];
-                allMatched++;
-                enableCards();
-                console.log(allMatched);
-                matchedAll();
+                // check for match
+                matchedCard(); // add match to class to keep cards open
+                cardStored = []; // clear the card store array
+                allMatched++; // increment matched to signal endgame if 8 matched
+                enableCards(); // enable the rest of the cards to continue
+                console.log(allMatched); // test
+                matchedAll(); // if 8 matches are signaled this executes to end game
             } else {
                 setTimeout(function() {
-                    closeCard();
+                    // keeps cards open for 1.15 seconds
+                    closeCard(); // flip cards back over because no cards matched
                 }, 1150);
-                cardStored = [];
+                cardStored = []; // clear the stored cards array used for checking matches
             }
         }
     }
+});
+
+/*
+* Event listener for Start and Restart
+*/
+
+// Restart
+gameRestart.addEventListener("click", function() {
+    restartAllGame();
+    console.log("restart");
 });
