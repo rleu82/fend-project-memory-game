@@ -34,22 +34,21 @@ const gameDeck = document.querySelector(".deck");
 const gameRestart = document.querySelector(".restart");
 let cardStored = [];
 
+// Render the cards
 function createGameBoard() {
     let cardHtml = "";
 
     for (let cardItem of shuffledCards) {
-        /*let cardPieceA = `<li class="card"><i class="fa `;
-        let cardPieceB = `"></i></li>`;
-        let theCard = cardPieceA + cardItem + cardPieceB;*/
-        // condensed to below using template literal
         let theCard = `<li class="card" data-symbol="${cardItem}"><i class="fa ${cardItem}"></i></li>`;
         cardHtml += theCard;
     }
+
     gameDeck.innerHTML = cardHtml;
     cardStored = [];
 }
 
-createGameBoard();
+// Create board when window loads
+window.addEventListener("onload", createGameBoard());
 
 // Shuffle function from http://stackoverflow.com/a/2450976
 function shuffle(array) {
@@ -71,20 +70,26 @@ function shuffle(array) {
 /*
  * Card Management Functions
 */
-const getAllCards = Array.from(document.getElementsByClassName("card"));
+let getAllCards = Array.from(document.getElementsByClassName("card"));
 
 // Displays card's symbol and disables mouse event on card (prevents double click)
 function openCard(card) {
     card.classList.add("open", "show", "stopMouse");
 }
 
-// Hides cards symbol and enables mouse events for cards that are flipped
+// Hides cards symbol
 function closeCard() {
     let arrCards = Array.from(document.getElementsByClassName("open"));
-    enableCards();
     arrCards.forEach(function(card) {
         card.classList.remove("open", "show", "stopMouse");
         console.log(card);
+    });
+}
+
+// Enables mouse events on all cards - Function called if cards match or do not match to reset mouse events
+function enableCards() {
+    getAllCards.forEach(function(card) {
+        card.classList.remove("stopMouse");
     });
 }
 
@@ -92,7 +97,7 @@ function closeCard() {
 function matchedCard() {
     let arrCards = Array.from(document.getElementsByClassName("open"));
     arrCards.forEach(function(card) {
-        card.classList.add("match", "stopMouse");
+        card.classList.add("match");
     });
 }
 
@@ -108,11 +113,30 @@ function disableCards() {
     });
 }
 
-// Disables mouse events on all cards - Function called if cards match or do not match to reset mouse events
-function enableCards() {
+// Reset all cards
+function resetCards() {
     getAllCards.forEach(function(card) {
-        card.classList.remove("stopMouse");
+        card.classList.remove("open", "show", "stopMouse", "match");
     });
+}
+
+// Check if cards match
+function checkMatch() {
+    disableCards();
+    if (cardStored[0].dataset.symbol == cardStored[1].dataset.symbol) {
+        matchedCard(); // add match to class to keep cards open
+        allMatched++; // increment matched to signal endgame if 8 matched
+        cardStored = [];
+        enableCards();
+    } else {
+        disableCards();
+        setTimeout(function() {
+            closeCard(); // flip cards back over because no cards matched
+            enableCards();
+
+            cardStored = [];
+        }, 1150);
+    }
 }
 
 /*
@@ -179,8 +203,16 @@ function stopTimer() {
     clearInterval(startTimer);
 }
 
+// Reset Timer
+function resetTimer() {
+    stopGameTimer = true;
+    stopTimer();
+    stopTimerCount();
+    stopGameTimer = false;
+}
+
 /* 
-* Start and End Game modals
+* End Game modals
 */
 // Show end game modal
 const endModal = document.getElementById("eModal");
@@ -197,18 +229,18 @@ function hideModal() {
 
 // Restart Game function
 function restartAllGame() {
-    yourMoves = 0;
     starCount = `<li><i class="fa fa-star"></i></li><li><i class="fa fa-star"></i></li><li><i class="fa fa-star"></i></li>`;
-    stopGameTimer = true;
-    stopTimer();
-    stopTimerCount();
-    stopGameTimer = false;
+    resetTimer();
     grabStars.innerHTML = starCount;
     grabMoves.innerHTML = "0";
-    grabSeconds.innerHTML = "0";
+    grabSeconds.innerHTML = "0" + tSeconds;
     grabMinutes.innerHTML = "0";
+    yourMoves = 0;
+    allMatched = 0;
     createGameBoard();
+    firstClick = 0;
 }
+
 // Check if all are matched to end game
 let allMatched = 0;
 function matchedAll() {
@@ -220,55 +252,27 @@ function matchedAll() {
 }
 
 /*
-* Event listener for a card(<li>)
-*   - event delegation on parent gameDeck
-*   - if target is card(<li>), the card is flipped and pushed to array cardStored[]
-*       - openCard() adds open, show, stopMouse classes to card
-*       - stopMouse prevents clicking same card twice
-*
-* If the cardStored array has TWO cards stored, disable all cards to prevent more cards from flipping
-*   - check array to compare dataset
-*   - matched cards have match and stopMouse classes added to prevent clicks
-*   - all other cards are enabled
-*       - if no matches found, close the cards and clear the array again.
+* Event Listeners
 */
 
 // Main Game Event Listener
+firstClick = 0;
 gameDeck.addEventListener("click", function(thisCard) {
     let card = thisCard.target;
     let gameCards = document.querySelectorAll(".card");
-
     if (thisCard.target.nodeName == "LI") {
         openCard(card);
         pushCard(card);
-        console.log(cardStored);
-
-        if (cardStored.length == 2) {
-            // when two cards added to array
-            disableCards(); // disable all cards for checking match
+        firstClick++;
+        if (firstClick == 1) {
+            timer();
+        } else if (cardStored.length == 2) {
             displayMoves(); // update move counter
-            if (cardStored[0].dataset.symbol == cardStored[1].dataset.symbol) {
-                // check for match
-                matchedCard(); // add match to class to keep cards open
-                cardStored = []; // clear the card store array
-                allMatched++; // increment matched to signal endgame if 8 matched
-                enableCards(); // enable the rest of the cards to continue
-                console.log(allMatched); // test
-                matchedAll(); // if 8 matches are signaled this executes to end game
-            } else {
-                setTimeout(function() {
-                    // keeps cards open for 1.15 seconds
-                    closeCard(); // flip cards back over because no cards matched
-                }, 1150);
-                cardStored = []; // clear the stored cards array used for checking matches
-            }
+            checkMatch(); // check for match
+            matchedAll();
         }
     }
 });
-
-/*
-* Event listener for Start and Restart
-*/
 
 // Restart
 gameRestart.addEventListener("click", function() {
