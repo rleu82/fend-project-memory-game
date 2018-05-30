@@ -69,6 +69,7 @@ h1 {
     transform: rotateY(0);
     background: #02b3e4;
     cursor: default;
+    pointer-events: none;
 }
 
 .deck .card.show {
@@ -77,6 +78,7 @@ h1 {
 
 .deck .card.match {
     cursor: default;
+    pointer-events: none;
     background: #02ccba;
     font-size: 33px;
 }
