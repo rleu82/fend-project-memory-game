@@ -124,6 +124,14 @@ function checkMatch() {
     if (cardStored[0].dataset.symbol == cardStored[1].dataset.symbol) {
         matchedCard(); // add match to class to keep cards open
         allMatched++; // increment matched to signal endgame if 8 matched
+        enableCards();
+        cardStored = [];
+    } else {
+        setTimeout(function() {
+            closeCard(); // flip cards back over because no cards matched
+            enableCards();
+            cardStored = [];
+        }, 1150);
     }
 }
 
@@ -143,6 +151,7 @@ let stopGameTimer = false;
 let yourMoves = 0;
 let modalMessage;
 
+// Timer DOM Update
 function manageTimer() {
     tSeconds++;
     if (tSeconds == 60) {
@@ -151,9 +160,9 @@ function manageTimer() {
     } else if (tSeconds < 10) {
         grabSeconds.textContent = "0" + tSeconds;
     } else {
-        grabSeconds.innerHTML = tSeconds;
+        grabSeconds.textContent = tSeconds;
     }
-    grabMinutes.innerHTML = tMinutes;
+    grabMinutes.textContent = tMinutes;
 }
 
 // Start Timer
@@ -251,10 +260,9 @@ function hideModal() {
     endModal.style.display = "none";
 }
 
-modalButton.addEventListener("click", function() {
-    restartGame();
-    hideModal();
-});
+/*
+* Restart and End Game 
+*/
 
 // Restart Game function
 function restartGame() {
@@ -298,11 +306,6 @@ gameDeck.addEventListener("click", function(thisCard) {
             displayMoves(); // update move counter
             checkMatch(); // check for match
             matchedAll();
-            setTimeout(function() {
-                closeCard(); // flip cards back over because no cards matched
-                enableCards();
-                cardStored = [];
-            }, 1150);
         }
     }
 });
@@ -311,4 +314,10 @@ gameDeck.addEventListener("click", function(thisCard) {
 gameRestart.addEventListener("click", function() {
     restartGame();
     console.log("restart");
+});
+
+// Modal Restart Game
+modalButton.addEventListener("click", function() {
+    restartGame();
+    hideModal();
 });
