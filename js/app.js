@@ -1,8 +1,4 @@
-/*
- * Create an array of symbols(list) that will be attached to the cards
- *   - these symbols are classes that will be added to the <i> when html is generated
- *   - symbols are from fontawesome using fa- naming scheme
- */
+// Cards array
 const gameCards = [
     "fa-diamond",
     "fa-diamond",
@@ -22,29 +18,18 @@ const gameCards = [
     "fa-bicycle"
 ];
 
-/*
-* Create memory game board
-*    - shuffle the cards using provided function
-*    - loop through the new array and generate html
-*    - add the stored html into <ul> with class of deck
-*    - used forOf to handle the new shuffled array 
-*/
 const shuffledCards = shuffle(gameCards);
 const gameDeck = document.querySelector(".deck");
-const gameRestart = document.querySelector(".restart");
 let cardStored = [];
 
-// Render the cards
+// Create memory game board
 function createGameBoard() {
     let cardHtml = "";
-
     for (let cardItem of shuffledCards) {
         let theCard = `<li class="card" data-symbol="${cardItem}"><i class="fa ${cardItem}"></i></li>`;
         cardHtml += theCard;
     }
-
     gameDeck.innerHTML = cardHtml;
-    cardStored = [];
 }
 
 // Create board when window loads
@@ -70,33 +55,50 @@ function shuffle(array) {
 /*
  * Card Management Functions
 */
-let getAllCards = Array.from(document.getElementsByClassName("card"));
+const gameRestart = document.querySelector(".restart");
 
 // Displays card's symbol and disables mouse event on card (prevents double click)
 function openCard(card) {
-    card.classList.add("open", "show", "stopMouse");
+    card.classList.add("stopMouse", "open", "show");
 }
 
 // Hides cards symbol
+
 function closeCard() {
-    let arrCards = Array.from(document.getElementsByClassName("open"));
-    arrCards.forEach(function(card) {
-        card.classList.remove("open", "show", "stopMouse");
-        console.log(card);
+    let clCards = Array.from(document.getElementsByClassName("open"));
+    console.log(clCards);
+    clCards.forEach(function(card) {
+        if (card.classList.contains("open")) {
+            card.classList.toggle("stopMouse", false);
+            card.classList.toggle("open", false);
+            card.classList.toggle("show", false);
+        }
     });
 }
 
 // Enables mouse events on all cards - Function called if cards match or do not match to reset mouse events
 function enableCards() {
+    let getAllCards = document.querySelectorAll(".card");
     getAllCards.forEach(function(card) {
-        card.classList.remove("stopMouse");
+        if (card.classList.contains("match")) {
+            card.classList.toggle("stopMouse", true);
+        } else {
+            card.classList.toggle("stopMouse", false);
+        }
+    });
+}
+
+// Disables mouse events on all cards - Function called when two cards are flipped
+function disableCards() {
+    let getAllCards = document.querySelectorAll(".card");
+    getAllCards.forEach(function(card) {
+        card.classList.toggle("stopMouse", true);
     });
 }
 
 // Add Match class and disable mouse events for matched cards
 function matchedCard() {
-    let arrCards = Array.from(document.getElementsByClassName("open"));
-    arrCards.forEach(function(card) {
+    cardStored.forEach(function(card) {
         card.classList.add("match");
     });
 }
@@ -106,86 +108,48 @@ function pushCard(card) {
     cardStored.push(card);
 }
 
-// Disables mouse events on all cards - Function called when two cards are flipped
-function disableCards() {
-    getAllCards.forEach(function(card) {
-        card.classList.add("stopMouse");
-    });
-}
-
 // Reset all cards
 function resetCards() {
+    let getAllCards = document.querySelectorAll(".card");
     getAllCards.forEach(function(card) {
-        card.classList.remove("open", "show", "stopMouse", "match");
+        card.classList.toggle("open", false);
+        card.classList.toggle("show", false);
+        card.classList.toggle("stopMouse", false);
+        card.classList.toggle("match", false);
     });
 }
 
 // Check if cards match
 function checkMatch() {
-    disableCards();
     if (cardStored[0].dataset.symbol == cardStored[1].dataset.symbol) {
         matchedCard(); // add match to class to keep cards open
         allMatched++; // increment matched to signal endgame if 8 matched
-        cardStored = [];
-        enableCards();
-    } else {
-        disableCards();
-        setTimeout(function() {
-            closeCard(); // flip cards back over because no cards matched
-            enableCards();
-
-            cardStored = [];
-        }, 1150);
     }
 }
 
 /*
-* Score Tracking Functions - Moves and Timer DOM
+* Score Tracking Functions - Stars, Moves and Timer DOM
 */
-// Move Count - Change stars to two when moves = 12, one star at moves = 18. default is 3 stars
-let yourMoves = 0;
-let starCount = `<li><i class="fa fa-star"></i></li><li><i class="fa fa-star"></i></li><li><i class="fa fa-star"></i></li>`;
-let modalMessage = " 3 Stars! You are a Pro!";
-const grabMoves = document.getElementById("moves");
-const grabStars = document.getElementById("stars");
 
-function displayMoves() {
-    let twoStars = `<li><i class="fa fa-star"></i></li><li><i class="fa fa-star"></i></li><li><i class="fa fa-star-o"></i></li>`;
-    let oneStar = `<li><i class="fa fa-star"></i></li><li><i class="fa fa-star-o"></i></li><li><i class="fa fa-star-o"></i></li>`;
-    yourMoves++;
-    console.log(yourMoves);
-    grabMoves.innerHTML = yourMoves;
-    if (yourMoves == 12) {
-        grabStars.innerHTML = twoStars;
-        starCount = twoStars;
-        modalMessage = " 2 Stars! Keep at it!";
-    } else if (yourMoves == 18) {
-        grabStars.innerHTML = oneStar;
-        starCount = oneStar;
-        modalMessage = " 1 Star! I know you can do better!";
-    }
-}
-
-// Manage timer DOM
+// Timer Variables
+const grabSeconds = document.querySelector("#seconds");
+const grabMinutes = document.querySelector("#minutes");
+const grabMoves = document.querySelector("#moves");
+const grabStars = document.querySelector("#stars");
 let tSeconds = 0;
 let tMinutes = 0;
-const grabSeconds = document.getElementById("seconds");
-const grabMinutes = document.getElementById("minutes");
+let startTimer;
 let stopGameTimer = false;
+let yourMoves = 0;
+let modalMessage;
 
-function stopTimerCount() {
-    if ((stopGameTimer = true)) {
-        tSeconds = 0;
-        tMinutes = 0;
-    }
-}
 function manageTimer() {
     tSeconds++;
     if (tSeconds == 60) {
         tMinutes++;
         tSeconds = 0;
     } else if (tSeconds < 10) {
-        grabSeconds.innerHTML = "0" + tSeconds;
+        grabSeconds.textContent = "0" + tSeconds;
     } else {
         grabSeconds.innerHTML = tSeconds;
     }
@@ -193,7 +157,6 @@ function manageTimer() {
 }
 
 // Start Timer
-let startTimer;
 function timer() {
     startTimer = setInterval(manageTimer, 1000);
 }
@@ -201,6 +164,14 @@ function timer() {
 // Stop Timer
 function stopTimer() {
     clearInterval(startTimer);
+}
+
+// Stop timer count
+function stopTimerCount() {
+    if ((stopGameTimer = true)) {
+        tSeconds = 0;
+        tMinutes = 0;
+    }
 }
 
 // Reset Timer
@@ -211,12 +182,65 @@ function resetTimer() {
     stopGameTimer = false;
 }
 
+// Move Count - Change stars to two when moves = 12, one star at moves = 18. default is 3 stars
+function displayMoves() {
+    yourMoves++;
+    grabMoves.textContent = yourMoves;
+    if (yourMoves == 12) {
+        grabStars.children[2].firstElementChild.classList.replace(
+            "fa-star",
+            "fa-star-o"
+        );
+        modalMessage = " 2 Stars! Keep at it!";
+    } else if (yourMoves == 18) {
+        grabStars.children[1].firstElementChild.classList.replace(
+            "fa-star",
+            "fa-star-o"
+        );
+        grabStars.children[2].firstElementChild.classList.replace(
+            "fa-star",
+            "fa-star-o"
+        );
+        modalMessage = " 1 Star! I know you can do better!";
+    } else if (yourMoves < 12) {
+        grabStars.children[2].firstElementChild.classList.replace(
+            "fa-star-o",
+            "fa-star"
+        );
+        grabStars.children[1].firstElementChild.classList.replace(
+            "fa-star-o",
+            "fa-star"
+        );
+        grabStars.children[0].firstElementChild.classList.replace(
+            "fa-star-o",
+            "fa-star"
+        );
+        modalMessage = " 3 Stars! You are a Pro!";
+    }
+}
+
+// Reset score
+function resetScores() {
+    grabMoves.innerHTML = "0";
+    grabSeconds.innerHTML = "0" + tSeconds;
+    grabMinutes.innerHTML = "0";
+}
+
+// Check first time click
+function firstTimer() {
+    if (firstClick == 1) {
+        timer();
+    }
+}
+
 /* 
 * End Game modals
 */
+
 // Show end game modal
 const endModal = document.getElementById("eModal");
 const getModalMessage = document.getElementById("end-message");
+const modalButton = document.getElementById("modal-b");
 function showModal() {
     endModal.style.display = "block";
     getModalMessage.innerHTML = modalMessage;
@@ -227,17 +251,20 @@ function hideModal() {
     endModal.style.display = "none";
 }
 
+modalButton.addEventListener("click", function() {
+    restartGame();
+    hideModal();
+});
+
 // Restart Game function
-function restartAllGame() {
-    starCount = `<li><i class="fa fa-star"></i></li><li><i class="fa fa-star"></i></li><li><i class="fa fa-star"></i></li>`;
+function restartGame() {
     resetTimer();
-    grabStars.innerHTML = starCount;
-    grabMoves.innerHTML = "0";
-    grabSeconds.innerHTML = "0" + tSeconds;
-    grabMinutes.innerHTML = "0";
+    resetScores();
     yourMoves = 0;
     allMatched = 0;
     createGameBoard();
+
+    cardStored = [];
     firstClick = 0;
 }
 
@@ -258,24 +285,30 @@ function matchedAll() {
 // Main Game Event Listener
 firstClick = 0;
 gameDeck.addEventListener("click", function(thisCard) {
-    let card = thisCard.target;
+    let tCard = thisCard.target;
     let gameCards = document.querySelectorAll(".card");
     if (thisCard.target.nodeName == "LI") {
-        openCard(card);
-        pushCard(card);
+        pushCard(tCard);
+        openCard(tCard);
         firstClick++;
-        if (firstClick == 1) {
-            timer();
-        } else if (cardStored.length == 2) {
+        firstTimer();
+        if (cardStored.length == 2) {
+            disableCards();
+            console.log(cardStored);
             displayMoves(); // update move counter
             checkMatch(); // check for match
             matchedAll();
+            setTimeout(function() {
+                closeCard(); // flip cards back over because no cards matched
+                enableCards();
+                cardStored = [];
+            }, 1150);
         }
     }
 });
 
 // Restart
 gameRestart.addEventListener("click", function() {
-    restartAllGame();
+    restartGame();
     console.log("restart");
 });
