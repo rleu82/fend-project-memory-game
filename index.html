@@ -11,12 +11,12 @@
 </head>
 
 <body>
-
+    <!-- Main game container -->
     <div class="container">
         <header>
             <h1>Matching Game</h1>
         </header>
-
+        <!-- Scores, Stars, Timer, Moves, Restart -->
         <section class="score-panel">
             <ul id="stars" class="stars">
                 <li id="star">
@@ -42,10 +42,12 @@
             </div>
         </section>
 
+        <!-- Game board generated within <ul> -->
         <ul class="deck">
         </ul>
     </div>
 
+    <!-- Hidden Modal for end game -->
     <div id="eModal" class="game-popup">
             <h3>Congratulations, You Won!</h3>
             <p id="end-message"></p>
