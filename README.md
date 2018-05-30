@@ -1,20 +1,18 @@
 # Memory Game Project
 
-## Table of Contents
+## Game Play Instructions
 
-* [Instructions](#instructions)
-* [Contributing](#contributing)
+1. Click on card to flip the card and start the score tracking.
+2. Try to match all the cards in the least amount of moves as possible.
+3. To restart the game, click restart and timers and scores will reset.
+4. Message will popup with final move count when you have matched all cards.
+5. Click restart on the popup message and beat your score!
 
-## Instructions
+### TODO
+1. Add animation to card flip
+2. Add animation when cards match or don't match
+3. Animate creation of game board.
 
-The starter project has some HTML and CSS styling to display a static version of the Memory Game project. You'll need to convert this project from a static project to an interactive one. This will require modifying the HTML and CSS files, but primarily the JavaScript file.
+---
+[Play the Game Here](https://rleu82.github.io/fend-project-memory-game/index.html)
 
-To get started, open `js/app.js` and start building out the app's functionality
-
-For specific, detailed instructions, look at the project instructions in the [Udacity Classroom](https://classroom.udacity.com/me).
-
-## Contributing
-
-This repository is the starter code for _all_ Udacity students. Therefore, we most likely will not accept pull requests.
-
-For details, check out [CONTRIBUTING.md](CONTRIBUTING.md).
