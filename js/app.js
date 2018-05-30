@@ -195,13 +195,13 @@ function resetTimer() {
 function displayMoves() {
     yourMoves++;
     grabMoves.textContent = yourMoves;
-    if (yourMoves == 12) {
+    if (yourMoves > 12) {
         grabStars.children[2].firstElementChild.classList.replace(
             "fa-star",
             "fa-star-o"
         );
-        modalMessage = " 2 Stars! Keep at it!";
-    } else if (yourMoves == 18) {
+        modalMessage = yourMoves + " moves! Keep at it!";
+    } else if (yourMoves > 18) {
         grabStars.children[1].firstElementChild.classList.replace(
             "fa-star",
             "fa-star-o"
@@ -210,7 +210,7 @@ function displayMoves() {
             "fa-star",
             "fa-star-o"
         );
-        modalMessage = " 1 Star! I know you can do better!";
+        modalMessage = yourMoves + " moves! I know you can do better!";
     } else if (yourMoves < 12) {
         grabStars.children[2].firstElementChild.classList.replace(
             "fa-star-o",
@@ -224,7 +224,7 @@ function displayMoves() {
             "fa-star-o",
             "fa-star"
         );
-        modalMessage = " 3 Stars! You are a Pro!";
+        modalMessage = yourMoves + " moves! You are a Pro!";
     }
 }
 
@@ -263,7 +263,6 @@ function hideModal() {
 /*
 * Restart and End Game 
 */
-
 // Restart Game function
 function restartGame() {
     resetTimer();
@@ -271,7 +270,6 @@ function restartGame() {
     yourMoves = 0;
     allMatched = 0;
     createGameBoard();
-
     cardStored = [];
     firstClick = 0;
 }
